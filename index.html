@@ -9,6 +9,7 @@
             margin: 0;
             height: 100%;
             overflow: hidden;
+            background-color: #000;
         }
         #canvas {
             width: 100%;
@@ -21,11 +22,14 @@
     <canvas id="canvas"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Request permission for device motion on iOS 13+
+        let motionAllowed = false;
+
+        // Request permission for motion on iOS 13+ (Safari)
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission()
                 .then(permissionState => {
                     if (permissionState === 'granted') {
+                        motionAllowed = true;
                         initialize();
                     } else {
                         alert("Motion permission not granted.");
@@ -33,10 +37,14 @@
                 })
                 .catch(console.error);
         } else {
-            initialize();  // Non-iOS or already granted
+            motionAllowed = true;
+            initialize(); // For other browsers or if permission already granted
         }
 
+        // Initialize the 3D scene if motion is allowed
         function initialize() {
+            if (!motionAllowed) return;
+
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
@@ -69,6 +77,12 @@
 
             animate();
         }
+
+        // Debug motion event listener to check motion data
+        window.addEventListener('deviceorientation', (event) => {
+            console.log('Device orientation data:', event.alpha, event.beta, event.gamma); // Logs the motion data
+        });
+
     </script>
 </body>
 </html>
