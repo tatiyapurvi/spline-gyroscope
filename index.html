@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spline with Gyroscope</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        iframe { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
+    </style>
+</head>
+<body>
+    <iframe src="https://my.spline.design/miniroomartcopy-87d0d2a10935a4c5274eb437ac52d38c/"></iframe>
+    <script>
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission()
+                .then(permissionState => {
+                    if (permissionState === 'granted') {
+                        window.addEventListener('deviceorientation', (event) => {
+                            // Pass gyroscope data to the Spline iframe if needed
+                            console.log('Orientation:', event.alpha, event.beta, event.gamma);
+                        });
+                    }
+                })
+                .catch(console.error);
+        } else {
+            console.log('Gyroscope access not needed or unavailable');
+        }
+    </script>
+</body>
+</html>
