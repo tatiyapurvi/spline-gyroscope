@@ -45,6 +45,7 @@
         function initialize() {
             if (!motionAllowed) return;
 
+            // Create the scene
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
@@ -56,32 +57,40 @@
             const cube = new THREE.Mesh(geometry, material);
             scene.add(cube);
 
+            // Position the camera
             camera.position.z = 5;
 
-            // Setup DeviceOrientationControls to track motion
-            const controls = new THREE.DeviceOrientationControls(camera);
-
-            // Resize handling
+            // Update on resize
             window.addEventListener('resize', () => {
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
             });
 
+            // Motion update function
+            function updateMotion(event) {
+                // Rotate based on device orientation
+                const alpha = event.alpha || 0; // Yaw rotation
+                const beta = event.beta || 0;   // Pitch rotation
+                const gamma = event.gamma || 0; // Roll rotation
+                
+                // Use device orientation values to rotate the cube
+                cube.rotation.x = THREE.MathUtils.degToRad(beta);  // Convert degrees to radians
+                cube.rotation.y = THREE.MathUtils.degToRad(alpha);
+                cube.rotation.z = THREE.MathUtils.degToRad(gamma);
+            }
+
+            // Listen for device motion event
+            window.addEventListener('deviceorientation', updateMotion, true);
+
             // Animation loop
             function animate() {
-                controls.update();  // Update camera position based on orientation
                 renderer.render(scene, camera);
                 requestAnimationFrame(animate);
             }
 
             animate();
         }
-
-        // Debug motion event listener to check motion data
-        window.addEventListener('deviceorientation', (event) => {
-            console.log('Device orientation data:', event.alpha, event.beta, event.gamma); // Logs the motion data
-        });
 
     </script>
 </body>
