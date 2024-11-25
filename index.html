@@ -3,97 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Tracking Scene</title>
+    <title>Spline Scene with Motion Orientation</title>
     <style>
         body, html {
             margin: 0;
+            padding: 0;
             height: 100%;
-            overflow: hidden;
             background-color: #000;
         }
-        #canvas {
+        iframe {
             width: 100%;
             height: 100%;
-            display: block;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        let motionAllowed = false;
-
-        // Request permission for motion on iOS 13+ (Safari)
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            DeviceMotionEvent.requestPermission()
-                .then(permissionState => {
-                    console.log("Motion Permission: ", permissionState);
-                    if (permissionState === 'granted') {
-                        motionAllowed = true;
-                        initialize();
-                    } else {
-                        alert("Motion permission not granted.");
-                    }
-                })
-                .catch(console.error);
-        } else {
-            motionAllowed = true;
-            initialize(); // For other browsers or if permission already granted
-        }
-
-        // Initialize the 3D scene if motion is allowed
-        function initialize() {
-            if (!motionAllowed) return;
-
-            // Create the scene
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            // Create a simple cube for demo purposes
-            const geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
-
-            // Position the camera
-            camera.position.z = 5;
-
-            // Update on resize
-            window.addEventListener('resize', () => {
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-            });
-
-            // Motion update function
-            function updateMotion(event) {
-                console.log("Device Orientation:", event.alpha, event.beta, event.gamma); // Debug logs
-
-                // Rotate based on device orientation
-                const alpha = event.alpha || 0; // Yaw rotation
-                const beta = event.beta || 0;   // Pitch rotation
-                const gamma = event.gamma || 0; // Roll rotation
-                
-                // Use device orientation values to rotate the cube
-                cube.rotation.x = THREE.MathUtils.degToRad(beta);  // Convert degrees to radians
-                cube.rotation.y = THREE.MathUtils.degToRad(alpha);
-                cube.rotation.z = THREE.MathUtils.degToRad(gamma);
-            }
-
-            // Listen for device motion event
-            window.addEventListener('deviceorientation', updateMotion, true);
-
-            // Animation loop
-            function animate() {
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-
-            animate();
-        }
-    </script>
+    <!-- Embed Spline Scene -->
+    <iframe 
+        src="<iframe src='https://my.spline.design/miniroomartcopy-87d0d2a10935a4c5274eb437ac52d38c/' frameborder='0' width='100%' height='100%'></iframe>" 
+        width="100%" 
+        height="100%" 
+        allow="accelerometer; gyroscope; camera; autoplay; fullscreen; vr">
+    </iframe>
 </body>
 </html>
