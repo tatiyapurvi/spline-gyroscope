@@ -28,6 +28,7 @@
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission()
                 .then(permissionState => {
+                    console.log("Motion Permission: ", permissionState);
                     if (permissionState === 'granted') {
                         motionAllowed = true;
                         initialize();
@@ -69,6 +70,8 @@
 
             // Motion update function
             function updateMotion(event) {
+                console.log("Device Orientation:", event.alpha, event.beta, event.gamma); // Debug logs
+
                 // Rotate based on device orientation
                 const alpha = event.alpha || 0; // Yaw rotation
                 const beta = event.beta || 0;   // Pitch rotation
@@ -91,7 +94,6 @@
 
             animate();
         }
-
     </script>
 </body>
 </html>
