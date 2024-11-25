@@ -1,28 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Spline with Gyroscope</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Tracking Scene</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        iframe { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
+        body, html {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <iframe src="https://my.spline.design/miniroomartcopy-87d0d2a10935a4c5274eb437ac52d38c/"></iframe>
+    <canvas id="canvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        // Request permission for device motion on iOS 13+
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission()
                 .then(permissionState => {
                     if (permissionState === 'granted') {
-                        window.addEventListener('deviceorientation', (event) => {
-                            // Pass gyroscope data to the Spline iframe if needed
-                            console.log('Orientation:', event.alpha, event.beta, event.gamma);
-                        });
+                        initialize();
+                    } else {
+                        alert("Motion permission not granted.");
                     }
                 })
                 .catch(console.error);
         } else {
-            console.log('Gyroscope access not needed or unavailable');
+            initialize();  // Non-iOS or already granted
+        }
+
+        function initialize() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Create a simple cube for demo purposes
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            camera.position.z = 5;
+
+            // Setup DeviceOrientationControls to track motion
+            const controls = new THREE.DeviceOrientationControls(camera);
+
+            // Resize handling
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            });
+
+            // Animation loop
+            function animate() {
+                controls.update();  // Update camera position based on orientation
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+
+            animate();
         }
     </script>
 </body>
